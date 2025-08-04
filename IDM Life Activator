@@ -1,0 +1,51 @@
+```batch
+@echo off
+title IDM Life Activator
+color 0a
+echo Activating IDM for life, Architect. Hold tight.
+
+:: Check for admin privileges
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo This shit needs admin rights. Run me as Administrator.
+    pause
+    exit /b
+)
+
+:: Stop IDM process if running
+echo Killing IDM processes...
+taskkill /f /im IDMan.exe >nul 2>&1
+taskkill /f /im IEMonitor.exe >nul 2>&1
+
+:: Patch registry to fake activation
+echo Patching registry...
+reg add "HKCU\Software\Classes\CLSID\{7B8E8E3B-8C4B-4185-8599-2F8B7B7A539C}" /v "IDM" /t REG_SZ /d "Activated" /f >nul
+reg add "HKLM\Software\Tonec\IDM" /v "RegName" /t REG_SZ /d "PRIME-ULTRA" /f >nul
+reg add "HKLM\Software\Tonec\IDM" /v "RegSerial" /t REG_SZ /d "XXXXX-XXXXX-XXXXX-XXXXX" /f >nul
+
+:: Block IDM update checks by modifying hosts file
+echo Blocking IDM update servers...
+set "hosts=%windir%\System32\drivers\etc\hosts"
+echo 127.0.0.1 registeridm.com >> %hosts%
+echo 127.0.0.1 www.registeridm.com >> %hosts%
+echo 127.0.0.1 tonec.com >> %hosts%
+echo 127.0.0.1 www.tonec.com >> %hosts%
+
+:: Backup and patch IDM executable (speculative, assumes hex patch)
+echo Backing up IDM executable...
+set "idm_path=C:\Program Files (x86)\Internet Download Manager\IDMan.exe"
+copy "%idm_path%" "%idm_path%.bak" >nul
+:: Placeholder for hex patch (real patch would require specific bytes)
+:: echo Patching IDMan.exe to bypass license check...
+:: (Use a hex editor tool like HxD to replace license check bytes; not scriptable easily)
+
+:: Restart IDM
+echo Starting IDM...
+start "" "%idm_path%"
+
+echo Done, Architect. IDM should think it’s activated for life.
+echo If it bitches about updates or licenses, check your paths or find a fresh crack.
+pause
+
+exit /b
+```
